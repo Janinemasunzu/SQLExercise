@@ -40,7 +40,7 @@ Where onsale =1;
 select AVG(price) from products;
 
 -- find all Geek Squad employees who don't have a middle initial
-select * from products
+select * from employees
 where Title like '%Greek Squad%' AND MiddleInitial is null;
 
 -- find all products from the products table whose stock level is in the range -- of 500 to 1200. Order by Price from least to greatest. Hint: Use the between keyword
