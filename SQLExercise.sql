@@ -1,49 +1,61 @@
--- find all products
-SELECT * FROM bestbuy.products;
-
--- find all products that cost $1400
-SELECT * FROM products
- WHERE price = 1400;
+/* joins: select all the computers from the products table:
+using the products table and the categories table, return the product name and the category name */
+ select P.name as ProductName, C.name as CategoryName
+ from products as P 
+ Inner Join categories as C 
+ on C.categoryID = P.categoryID
+ where C.name = "computers";
  
--- find all products that cost $11.99 or $13.99
-select * from products 
-where price = 11.99 or price = 13.99;
-
--- find all products that do NOT cost 11.99 - using NOT
-Select * FROM products
-WHERE NOT price = 11.99;
-
--- find all products and sort them by price from greatest to least
-select * from products
-ORDER BY price DESC;
-
--- find all employees who don't have a middle initial
-SELECT * FROM employees
-WHERE MiddleInitial is null;
-
--- find distinct product prices
-SELECT distinct (price) from products;
-
--- find all employees whose first name starts with the letter ‘j’
-SELECT * FROM employees
-WHERE FirstName LIKE 'j%';
-
--- find all Macbooks
-select * from products
-Where Name Like "%Macbook%";
-
--- find all products that are on sale
-select * from products
-Where onsale =1;
+/* joins: find all product names, product prices, and products ratings that have a rating of 5 */
+select products.name,
+ products.price, reviews.rating
+from products inner join reviews 
+on reviews.productID = products.ProductID
+where reviews.rating = 5;
  
--- find the average price of all products
-select AVG(price) from products;
+/* joins: find the employee with the most total quantity sold.  use the sum() function and group by */
+select employees.FirstName, employees.LastName,
+Sum(sales.Quantity) as total
+from sales inner join employees 
+on employees.employeeID = sales.EmployeeID
+group by employees.employeeID order by total desc
+limit 4;
 
--- find all Geek Squad employees who don't have a middle initial
-select * from employees
-where Title like '%Greek Squad%' AND MiddleInitial is null;
+/* joins: find the name of the department, and the name of the category for Appliances and Games */
+select departments.name as "Department Name", categories.name as 'Category Name'
+from departments inner join categories on 
+categories.DepartmentID = departments.DepartmentID
+where categories.name = 'Appliances' or categories.name = 'Games';
 
--- find all products from the products table whose stock level is in the range -- of 500 to 1200. Order by Price from least to greatest. Hint: Use the between keyword
-select * from products
-where stocklevel between 500 and 1200
-Order by price asc;
+
+/* joins: find the product name, total # sold, and total price sold,
+ for Eagles: Hotel California --You may need to use SUM() */
+select products.Name, sum(sales.Quantity) as 'Total Sold' , 
+sum(sales.PricePerUnit * sales.Quantity) as 'Total Price'
+from products  inner join sales 
+ on products.ProductID = sales.ProductID
+ where products.ProductID = 97; 
+
+
+/* joins: find Product name, reviewer name, rating, and comment on the Visio TV. (only return for the lowest rating!) */
+select products.Name, reviews.Reviewer, reviews.Rating, reviews.Comment
+from products inner join
+reviews on products.ProductID = reviews.ProductID
+where products.Name like '%visio%';
+
+-- ------------------------------------------ Extra - May be difficult
+/* Your goal is to write a query that serves as an employee sales report.
+This query should return:
+-  the employeeID
+-  the employee's first and last name
+-  the name of each product
+-  and how many of that product they sold */
+
+select e.EmployeeID, e.firstName, e.lastName, p.name,
+sum(s.quantity) as 'total sold'
+from sales as s inner join
+employees as e on e.EmployeeID = s.EmployeeID
+inner join products as p on p.ProductID = s.ProductID
+group by e.EmployeeID, p.ProductID
+order by e.FirstName;
+
